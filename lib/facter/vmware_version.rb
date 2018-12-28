@@ -27,15 +27,15 @@ Facter.add('vmware_version') do
     setcode {
         biosinformation = Facter::Util::Resolution.exec("dmidecode -t bios | grep -A4 'BIOS Information'")
         if !biosinformation.nil?
-            if biosinformation.include? 'Address: 0x'
-                biosaddress = biosinformation.match(/Address: (0x.*)/i)[1]
+            if biosinformation =~ /Address: (0x.*)/i
+                biosaddress = $1
             else
                 biosaddress = 'no_data'
             end
 
             # The BIOS release date is currently unused. Uncomment if needed.
-            #if biosinformation.include? 'Release Date:'
-            #    biosdate = biosinformation.match(/Release Date: (.*)/i)[1]
+            #if biosinformation =~ /Release Date: (.*)/i
+            #    biosdate = $1
             #else
             #    biosdate = 'no_data'
             #end
