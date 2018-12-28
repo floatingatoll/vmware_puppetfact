@@ -1,5 +1,23 @@
 require 'facter'
 
+biosaddresses = {
+#           Numbers from a prior life, which have only anecdotal proof.  Uncomment if you wish
+#            '0xE8480' => '2.5',
+#            '0xE7C70' => '3.0',
+#            '0xE7910' => '3.5',
+            '0xEA550' => '4.0',
+            '0xEA2E0' => '4.1',
+            '0xE72C0' => '5.0',
+            '0xEA0C0' => '5.1',
+            '0xE9AB0' => '5.1',
+            '0xEA050' => '5.5',
+            '0xE9FE0' => '5.5',
+            '0xE9A40' => '6.0',
+            '0xE99E0' => '6.0',
+            '0xEA580' => '6.5',
+            '0xEA520' => '6.7',
+}
+
 if Facter.value(:kernel) == 'Linux'
     Facter.loadfacts()
     
@@ -19,40 +37,8 @@ if Facter.value(:kernel) == 'Linux'
                 biosdate = 'no_data'
             end
 
-            if biosaddress == 'no_data'
-                vmversion = "unknown-#{biosaddress}"
-#           Numbers from a prior life, which have only anecdotal proof.  Uncomment if you wish
-#            elsif biosaddress == '0xE8480'
-#                vmversion = '2.5'
-#            elsif biosaddress == '0xE7C70'
-#                vmversion = '3.0'
-#            elsif biosaddress == '0xE7910'
-#                vmversion = '3.5'
-            elsif biosaddress == '0xEA550'
-                vmversion = '4.0'
-            elsif biosaddress == '0xEA2E0'
-                vmversion = '4.1'
-            elsif biosaddress == '0xE72C0'
-                vmversion = '5.0'
-            elsif biosaddress == '0xEA0C0'
-                vmversion = '5.1'
-            elsif biosaddress == '0xE9AB0'
-                vmversion = '5.1'
-            elsif biosaddress == '0xEA050'
-                vmversion = '5.5'
-            elsif biosaddress == '0xE9FE0'
-                vmversion = '5.5'
-            elsif biosaddress == '0xE9A40'
-                vmversion = '6.0'
-            elsif biosaddress == '0xE99E0'
-                vmversion = '6.0'
-            elsif biosaddress == '0xEA580'
-                vmversion = '6.5'
-            elsif biosaddress == '0xEA520'
-                vmversion = '6.7'
-            else
-                vmversion = "unknown-#{biosaddress}"
-            end
+            # Either it's a known version, or it's unknown (including 'no_data')
+            vmversion = biosaddresses.fetch(biosaddress, "unknown-#{biosaddress}")
 
             Facter.add('vmware_version') do
                 confine :virtual => :vmware
