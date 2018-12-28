@@ -32,11 +32,13 @@ Facter.add('vmware_version') do
             else
                 biosaddress = 'no_data'
             end
-            if biosinformation.include? 'Release Date:'
-                biosdate = biosinformation.match(/Release Date: (.*)/i)[1]
-            else
-                biosdate = 'no_data'
-            end
+
+            # The BIOS release date is currently unused. Uncomment if needed.
+            #if biosinformation.include? 'Release Date:'
+            #    biosdate = biosinformation.match(/Release Date: (.*)/i)[1]
+            #else
+            #    biosdate = 'no_data'
+            #end
 
             # Return either a known version, or a constructed unknown version.
             biosaddresses.fetch(biosaddress, "unknown-#{biosaddress}")
