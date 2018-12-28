@@ -18,6 +18,7 @@ biosaddresses = {
             '0xEA520' => '6.7',
 }
 
+# TODO: Verify this is required for the confine to work correctly.
 Facter.loadfacts()
 
 Facter.add('vmware_version') do
