@@ -18,32 +18,31 @@ biosaddresses = {
             '0xEA520' => '6.7',
 }
 
-if Facter.value(:kernel) == 'Linux'
-    Facter.loadfacts()
-    
-    hasdmidecode = Facter::Util::Resolution.exec('which dmidecode')
-    if !hasdmidecode.nil?
-        biosinformation = Facter::Util::Resolution.exec("#{hasdmidecode} -t bios | grep -A4 'BIOS Information'")
-        if !biosinformation.nil?
+Facter.loadfacts()
 
-            if biosinformation.include? 'Address: 0x'
-                biosaddress = biosinformation.match(/Address: (0x.*)/i)[1]
-            else
-                biosaddress = 'no_data'
-            end
-            if biosinformation.include? 'Release Date:'
-                biosdate = biosinformation.match(/Release Date: (.*)/i)[1]
-            else
-                biosdate = 'no_data'
-            end
+Facter.add('vmware_version') do
+    confine :kernel => 'Linux'
+    confine :virtual => :vmware
+    setcode {
+        hasdmidecode = Facter::Util::Resolution.exec('which dmidecode')
+        if !hasdmidecode.nil?
+            biosinformation = Facter::Util::Resolution.exec("#{hasdmidecode} -t bios | grep -A4 'BIOS Information'")
+            if !biosinformation.nil?
 
-            # Either it's a known version, or it's unknown (including 'no_data')
-            vmversion = biosaddresses.fetch(biosaddress, "unknown-#{biosaddress}")
+                if biosinformation.include? 'Address: 0x'
+                    biosaddress = biosinformation.match(/Address: (0x.*)/i)[1]
+                else
+                    biosaddress = 'no_data'
+                end
+                if biosinformation.include? 'Release Date:'
+                    biosdate = biosinformation.match(/Release Date: (.*)/i)[1]
+                else
+                    biosdate = 'no_data'
+                end
 
-            Facter.add('vmware_version') do
-                confine :virtual => :vmware
-                setcode { vmversion }
+                # Return either a known version, or a constructed unknown version.
+                biosaddresses.fetch(biosaddress, "unknown-#{biosaddress}")
             end
         end
-    end
+    }
 end
