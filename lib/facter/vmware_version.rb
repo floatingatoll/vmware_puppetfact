@@ -24,25 +24,21 @@ Facter.add('vmware_version') do
     confine :kernel => 'Linux'
     confine :virtual => :vmware
     setcode {
-        hasdmidecode = Facter::Util::Resolution.exec('which dmidecode')
-        if !hasdmidecode.nil?
-            biosinformation = Facter::Util::Resolution.exec("#{hasdmidecode} -t bios | grep -A4 'BIOS Information'")
-            if !biosinformation.nil?
-
-                if biosinformation.include? 'Address: 0x'
-                    biosaddress = biosinformation.match(/Address: (0x.*)/i)[1]
-                else
-                    biosaddress = 'no_data'
-                end
-                if biosinformation.include? 'Release Date:'
-                    biosdate = biosinformation.match(/Release Date: (.*)/i)[1]
-                else
-                    biosdate = 'no_data'
-                end
-
-                # Return either a known version, or a constructed unknown version.
-                biosaddresses.fetch(biosaddress, "unknown-#{biosaddress}")
+        biosinformation = Facter::Util::Resolution.exec("dmidecode -t bios | grep -A4 'BIOS Information'")
+        if !biosinformation.nil?
+            if biosinformation.include? 'Address: 0x'
+                biosaddress = biosinformation.match(/Address: (0x.*)/i)[1]
+            else
+                biosaddress = 'no_data'
             end
+            if biosinformation.include? 'Release Date:'
+                biosdate = biosinformation.match(/Release Date: (.*)/i)[1]
+            else
+                biosdate = 'no_data'
+            end
+
+            # Return either a known version, or a constructed unknown version.
+            biosaddresses.fetch(biosaddress, "unknown-#{biosaddress}")
         end
     }
 end
